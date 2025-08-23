@@ -11,7 +11,9 @@ static const std::string filename = "table_scene_lms400.pcd";
 
 int main() {
     const std::filesystem::path in_path  = dataDir / filename;
-    const std::filesystem::path out_path = "cloud_out/table_scene_lms400_downsampled.pcd";
+    const std::filesystem::path out_dir  = dataDir / "cloud_out";
+    const std::filesystem::path out_path = out_dir / "table_scene_lms400_downsampled.pcd";
+    std::filesystem::create_directories(out_dir); // ensure cloud_out exists
 
     std::cout << "Running voxel downsampling\n";
     std::cout << "Opening " << in_path << "\n";
