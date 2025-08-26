@@ -1,0 +1,40 @@
+{
+  "C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json",
+  "C_Cpp.exclusionPolicy": "checkFolders",
+  "C_Cpp.workspaceParsingPriority": "low",
+  "C_Cpp.intelliSenseCacheSize": 512,
+  "C_Cpp.loggingLevel": "Warning",
+
+
+  "files.exclude": {
+    "**/build": true,
+    "**/.git": true,
+    "**/.vscode": true,
+    "**/__pycache__": true,
+    "**/*.o": true
+  },
+  "search.exclude": {
+    "**/build": true,
+    "**/.git": true,
+    "**/.vscode": true,
+    "**/__pycache__": true,
+    "**/*.o": true,
+    "**/data": true
+  },
+  "files.watcherExclude": {
+    "**/build/**": true,
+    "**/.git/**": true,
+    "**/.vscode/**": true,
+    "**/__pycache__/**": true,
+    "**/node_modules/**": true,
+    "**/data/**": true
+  },
+
+  
+  "C_Cpp.codeAnalysis.enable": false,
+  "C_Cpp.clang_format_style": "file",
+
+
+  "git.decorations.enabled": false,
+  "editor.linkedEditing": false
+}
