@@ -1,33 +1,37 @@
+#include "viewer.hpp"
 #include <iostream>
-#include <pcl/io/pcd_io.h>
-#include <pcl/io/ply_io.h>
-#include <pcl/point_types.h>
-#include <pcl/visualization/pcl_visualizer.h>
+#include <stdexcept>
 
-static pcl::PointCloud<pcl::PointXYZ>::Ptr loadCloud(const std::string &path) {
+namespace basics {
+
+pcl::PointCloud<pcl::PointXYZ>::Ptr loadCloud(const std::string &path) {
     auto cloud = pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ>);
     if (path.size() >= 4 && path.substr(path.size()-4) == ".pcd") {
-        if (pcl::io::loadPCDFile(path, *cloud) < 0) throw std::runtime_error("Failed to load PCD: " + path);
+        if (pcl::io::loadPCDFile(path, *cloud) < 0)
+            throw std::runtime_error("Failed to load PCD: " + path);
     } else {
-        if (pcl::io::loadPLYFile(path, *cloud) < 0) throw std::runtime_error("Failed to load PLY: " + path);
+        if (pcl::io::loadPLYFile(path, *cloud) < 0)
+            throw std::runtime_error("Failed to load PLY: " + path);
     }
     return cloud;
 }
 
-int main(int argc, char** argv) {
-    if (argc < 2) { std::cerr << "Usage: " << argv[0] << " <cloud.pcd|cloud.ply>\n"; return 1; }
-
-    auto cloud = loadCloud(argv[1]);
-    std::cout << "Loaded " << cloud->size() << " points\n";
-
-    pcl::visualization::PCLVisualizer::Ptr vis(new pcl::visualization::PCLVisualizer("Viewer"));
+std::shared_ptr<pcl::visualization::PCLVisualizer>
+makeViewer(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& cloud,
+           const std::string& title)
+{
+    auto vis = std::make_shared<pcl::visualization::PCLVisualizer>(title);
     vis->setBackgroundColor(0.05, 0.05, 0.08);
     pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color(cloud, 200, 230, 255);
     vis->addPointCloud<pcl::PointXYZ>(cloud, color, "cloud");
     vis->addCoordinateSystem(0.2);
     vis->initCameraParameters();
-
-    while (!vis->wasStopped()) vis->spinOnce(10);
-
-    return 0;
+    return vis;
 }
+
+void show(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& cloud, int delay_ms) {
+    auto vis = makeViewer(cloud);
+    while (!vis->wasStopped()) vis->spinOnce(delay_ms);
+}
+
+} 
