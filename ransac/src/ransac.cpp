@@ -1,5 +1,6 @@
 #include <iostream>
 #include <filesystem>
+#include "viewer.hpp"
 
 #include <pcl/ModelCoefficients.h>
 #include <pcl/io/pcd_io.h>
@@ -10,6 +11,12 @@
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/segmentation/sac_segmentation.h>
+#include <pcl/filters/voxel_grid.h>
+
+#include <pcl/common/centroid.h>
+#include <pcl/visualization/pcl_visualizer.h>
+
+
 
 typedef pcl::PointXYZ PointT;
 
@@ -33,10 +40,12 @@ int main(int, char**){
     pcl::ExtractIndices<PointT> extract;
     pcl::ExtractIndices<pcl::Normal> extract_normals;
     pcl::search::KdTree<PointT>::Ptr tree (new pcl::search::KdTree<PointT> ());
+    pcl::VoxelGrid<PointT> vg;
 
     // Datasets
     pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
     pcl::PointCloud<PointT>::Ptr cloud_filtered (new pcl::PointCloud<PointT>);
+    pcl::PointCloud<PointT>::Ptr cloud_voxelised (new pcl::PointCloud<PointT>);
     pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
     pcl::PointCloud<PointT>::Ptr cloud_filtered2 (new pcl::PointCloud<PointT>);
     pcl::PointCloud<pcl::Normal>::Ptr cloud_normals2 (new pcl::PointCloud<pcl::Normal>);
@@ -52,8 +61,13 @@ int main(int, char**){
 
     std::cerr << "PointCloud has: " << cloud->points.size() << " data points." << std::endl;
 
+    // Voxel downsample
+    vg.setInputCloud(cloud);
+    vg.setLeafSize(0.01f, 0.01f, 0.01f); // 1 cm voxels (tune!)
+    vg.filter(*cloud_voxelised);
+
     // Build the passthrough filter to remove noise
-    pass.setInputCloud (cloud);
+    pass.setInputCloud (cloud_voxelised);
     pass.setFilterFieldName ("z");
     pass.setFilterLimits (-10, 10);
     pass.filter (*cloud_filtered);
@@ -115,9 +129,28 @@ int main(int, char**){
         std::cerr << "Can't find the cylindrical component." << std::endl;
     else
     {
+        Eigen::Vector4f c;
+        pcl::compute3DCentroid(*cloud_cylinder, c);
+        std::cout << "C0: " << c[0] << " ,C1: " << c[1] << " ,C2: " << c[2] <<std::endl;
+        
+
         std::cerr << "PointCloud representing the cylindrical component: " 
                   << cloud_cylinder->points.size () << " data points." << std::endl;
-        writer.write (out_path, *cloud_cylinder, false);
+        writer.write (out_path.string(), *cloud_cylinder, false);
+
+        auto vis = basics::makeViewer(cloud_filtered2, "RANSAC — scene");
+
+        // highlight cylinder points
+        pcl::visualization::PointCloudColorHandlerCustom<PointT> cyl_color(cloud_cylinder, 20, 200, 20);
+        vis->addPointCloud<PointT>(cloud_cylinder, cyl_color, "cylinder");
+        vis->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, "cylinder");
+
+        // centroid marker (assuming you computed Eigen::Vector4f c earlier)
+        vis->addSphere(pcl::PointXYZ(c[0], c[1], c[2]), 0.02, 1.0, 0.1, 0.1, "centroid_sphere");
+        vis->addText3D("centroid", pcl::PointXYZ(c[0], c[1], c[2]), 0.05, 1.0, 0.1, 0.1, "centroid_label");
+
+        // run the viewer loop
+        while (!vis->wasStopped()) vis->spinOnce(16);
     }
 
     return 0;
