@@ -6,4 +6,4 @@ cd ~/pointclouds
 ```
 
 
-![Forest 3 Euclidean Clustering](screenshots/forest3 cluster.png)
+![Forest 3 Euclidean Clustering](screenshots/forest3%20cluster.png)
