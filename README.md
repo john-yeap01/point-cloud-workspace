@@ -7,3 +7,5 @@ cd ~/pointclouds
 
 
 ![Forest 3 Euclidean Clustering](screenshots/forest3%20cluster.png)
+
+![Canopy height model](screenshots/CHM.png)
