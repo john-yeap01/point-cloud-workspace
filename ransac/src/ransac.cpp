@@ -21,14 +21,14 @@
 typedef pcl::PointXYZ PointT;
 
 static const std::filesystem::path dataDir = DATA_DIR;
-static const std::string filename = "table_scene_lms400.pcd";
+static const std::string filename = "forest4_segmented.pcd";
 
 int main(int, char**){
     std::cout << "Hello, from ransac!\n";
 
     const std::filesystem::path in_path  = dataDir / filename;
     const std::filesystem::path out_dir  = dataDir / "cloud_out";
-    const std::filesystem::path out_path = out_dir / "table_scene_lms400_cylinder.pcd";
+    const std::filesystem::path out_path = out_dir / "forest4_segmented.pcd";
     std::filesystem::create_directories(out_dir); // ensure cloud_out exists
 
     // All the objects needed

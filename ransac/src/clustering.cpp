@@ -20,8 +20,8 @@ int main ()
     auto start = std::chrono::high_resolution_clock::now();
   // I/O paths (uses CMake-injected DATA_DIR like your other files)
   static const std::filesystem::path dataDir = DATA_DIR;
-  static const std::string flag = "nREMOVE PLANE";
-  static const std::string filename = "no_ground.pcd";
+  static const std::string flag = "REMOVE PLANE";
+  static const std::string filename = "forest4_segmented.pcd";
   const std::filesystem::path in_path  = dataDir / filename;
   const std::filesystem::path out_dir  = dataDir / "cloud_out";
   const std::filesystem::path clu_dir  = out_dir / "clusters";
@@ -99,7 +99,7 @@ std::cout << "Removed " << (cloud_filtered->size() - cloud_no_nan->size())
   ec.setMinClusterSize (20);
 //   ec.setMinClusterSize (20);
 //   ec.setMaxClusterSize (25000);
-  ec.setMaxClusterSize (50000);
+  ec.setMaxClusterSize (20000);
   ec.setSearchMethod (tree);
   ec.setInputCloud (cloud_filtered);
   ec.extract (cluster_indices);

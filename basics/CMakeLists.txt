@@ -10,7 +10,6 @@ find_package(PCL 1.12 REQUIRED COMPONENTS common io filters segmentation kdtree 
 add_library(basics STATIC
     src/viewer.cpp
 )
-
 target_include_directories(basics
     PUBLIC
       ${CMAKE_CURRENT_SOURCE_DIR}/include
