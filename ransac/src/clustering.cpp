@@ -13,12 +13,15 @@
 #include <iomanip>   // for setw, setfill
 #include <filesystem>
 #include <random>    // for colors
+#include <chrono>
 
 int main ()
 {
+    auto start = std::chrono::high_resolution_clock::now();
   // I/O paths (uses CMake-injected DATA_DIR like your other files)
   static const std::filesystem::path dataDir = DATA_DIR;
-  static const std::string filename = "table_scene_lms400.pcd";
+  static const std::string flag = "nREMOVE PLANE";
+  static const std::string filename = "no_ground.pcd";
   const std::filesystem::path in_path  = dataDir / filename;
   const std::filesystem::path out_dir  = dataDir / "cloud_out";
   const std::filesystem::path clu_dir  = out_dir / "clusters";
@@ -54,8 +57,7 @@ int main ()
   seg.setDistanceThreshold (0.02);
 
   int nr_points = (int) cloud_filtered->size ();
-  while (cloud_filtered->size () > 0.3 * nr_points)
-  {
+  while (cloud_filtered->size () > 0.3 * nr_points && flag=="REMOVE PLANE"){
     seg.setInputCloud (cloud_filtered);
     seg.segment (*inliers, *coefficients);
     if (inliers->indices.empty())
@@ -79,15 +81,25 @@ int main ()
     *cloud_filtered = *cloud_f;
   }
 
+  // input cloud: cloud_filtered
+    std::vector<int> indices;
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_no_nan(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::removeNaNFromPointCloud(*cloud_filtered, *cloud_no_nan, indices);
+
+std::cout << "Removed " << (cloud_filtered->size() - cloud_no_nan->size())
+          << " NaN points\n";
+
   // Kd-tree + Euclidean clustering
   pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
   tree->setInputCloud (cloud_filtered);
 
   std::vector<pcl::PointIndices> cluster_indices;
   pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-  ec.setClusterTolerance (0.02); // 2cm
-  ec.setMinClusterSize (100);
-  ec.setMaxClusterSize (25000);
+  ec.setClusterTolerance (0.2); // 2cm
+  ec.setMinClusterSize (20);
+//   ec.setMinClusterSize (20);
+//   ec.setMaxClusterSize (25000);
+  ec.setMaxClusterSize (50000);
   ec.setSearchMethod (tree);
   ec.setInputCloud (cloud_filtered);
   ec.extract (cluster_indices);
@@ -141,6 +153,10 @@ int main ()
       vis->addPointCloud<pcl::PointXYZ>(C, clr, id);
       vis->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, id);
     }
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
+    std::cout << "Elapsed time: " << elapsed.count() << " s\n";
 
     while (!vis->wasStopped()) vis->spinOnce(16);
   } else {
