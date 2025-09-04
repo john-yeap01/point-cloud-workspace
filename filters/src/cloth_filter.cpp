@@ -2,7 +2,7 @@
 #include <filesystem>
 #include <limits>
 #include <cmath>
-
+#include <chrono>
 #include <vector>
 
 #include <pcl/point_types.h>
@@ -39,9 +39,11 @@ int main()
     std::cerr << "Loaded: " << cloud->width * cloud->height
               << " points (" << pcl::getFieldsList(*cloud) << ")\n";
 
+    auto start = std::chrono::high_resolution_clock::now();
+
     // ---- Convert PCL -> CSF simple point list ----
     // AFTER (right)
-    csf::PointCloud csf_points;
+    csf::PointCloud csf_points; // vector of points 
     std::vector<int> idx_map;
     idx_map.reserve(cloud->size());
 
@@ -105,6 +107,12 @@ int main()
         ex.setNegative(false);
         ex.filter(*nong_cloud);
     }
+
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+    std::cout << "Elapsed time: " << duration_ms.count() << " milliseconds" << std::endl;
 
     if (writer.write(out_ground.string(), *ground_cloud, false)) {
         std::cerr << "Failed to write " << out_ground << "\n";

@@ -35,6 +35,10 @@ add_executable(cloth_filter src/cloth_filter.cpp)
 target_include_directories(cloth_filter PRIVATE ${PCL_INCLUDE_DIRS} ${CSF_INCLUDE_DIR})
 target_link_libraries(cloth_filter PRIVATE ${PCL_LIBRARIES} ${CSF_LIBRARY})
 
+add_executable(super_voxel src/super_voxel.cpp)
+target_include_directories(super_voxel PRIVATE ${PCL_INCLUDE_DIRS})
+target_link_libraries(super_voxel PRIVATE ${PCL_LIBRARIES})
+
 # point to umbrella-level data folder
 get_filename_component(ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE)
 set(DATA_DIR "${ROOT_DIR}/data")
@@ -43,5 +47,7 @@ set(DATA_DIR "${ROOT_DIR}/data")
 target_compile_definitions(voxel_sampling PRIVATE DATA_DIR="${DATA_DIR}")
 target_compile_definitions(ground_removal PRIVATE DATA_DIR="${DATA_DIR}")
 target_compile_definitions(cloth_filter PRIVATE DATA_DIR="${DATA_DIR}")
+target_compile_definitions(super_voxel PRIVATE DATA_DIR="${DATA_DIR}")
+
 
 add_definitions(${PCL_DEFINITIONS})
