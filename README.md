@@ -1,3 +1,10 @@
+## Installation 
+
+This repository makes use of 
+1. Point Cloud Library (PCL) https://pointclouds.org
+2. Cloth Simulation Filter (CSF) https://github.com/jianboqi/CSF
+
+
 To use the pcd viewer, run this 
 
 ```
