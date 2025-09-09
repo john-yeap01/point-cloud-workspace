@@ -17,7 +17,7 @@
 #include <pcl/segmentation/region_growing.h>
 
 static const std::filesystem::path dataDir = DATA_DIR;   // must be a quoted macro
-static const std::string filename = "single_palm.pcd";
+static const std::string filename = "sectionA.pcd";
 
 int main()
 {
@@ -52,8 +52,9 @@ int main()
   pcl::removeNaNFromPointCloud(*cloud, *indices);
 
   pcl::RegionGrowing<pcl::PointXYZ, pcl::Normal> reg;
-  reg.setMinClusterSize (1);
-  reg.setMaxClusterSize (1000000);
+
+  reg.setMinClusterSize (2000);
+  reg.setMaxClusterSize (100000);
   reg.setSearchMethod (tree);
   reg.setNumberOfNeighbours (60);
   reg.setInputCloud (cloud);

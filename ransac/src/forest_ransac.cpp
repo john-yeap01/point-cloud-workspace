@@ -38,6 +38,7 @@ static inline float deg2rad(float d){ return d * float(M_PI) / 180.0f; }
 
 int main(){
     std::cout << "Tree trunk finder (RANSAC cylinders)\n";
+    std::cout << "试图中文" << std::endl;
 
     auto rad2deg = [](double r){ return r * 180.0 / M_PI; };
 
@@ -249,7 +250,10 @@ int main(){
     // }
 
     if (cloud_band->points.empty())
+    {
         std::cerr << "Can't find any cloud points." << std::endl;
+        std::cerr << "谢谢你" <<  std::endl;
+    }
     else
     {   
         // run the viewer loop
