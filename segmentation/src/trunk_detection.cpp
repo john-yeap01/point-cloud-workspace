@@ -1,4 +1,4 @@
-// trunks_from_stumps.cpp
+// trunks_from_stumps process:
 // 1) Slice z in [0.5, 1.5] and cluster → stump candidates
 // 2) For each stump centroid (x,y), select a cylinder (~1m radius) from the FULL cloud
 // 3) Cluster points inside each cylinder and keep the largest cluster as the trunk
