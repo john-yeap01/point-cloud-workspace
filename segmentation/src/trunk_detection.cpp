@@ -30,6 +30,9 @@
 #include <pcl/filters/filter.h>     // removeNaNFromPointCloud
 #include <pcl/common/common.h>      // getMinMax3D
 
+//Add ransac
+
+
 static const std::filesystem::path dataDir = DATA_DIR;  // must be a quoted macro
 static const std::string filename = "sectionA.pcd";
 
@@ -262,6 +265,8 @@ int main(int, char**)
             std::cout << "  trunk " << ti << ": (empty)\n";
         }
         ++ti;
+
+
     }
 
     // Merge all trunks for convenience
